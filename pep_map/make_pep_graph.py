@@ -60,7 +60,8 @@ def main(output_root_path: str=None) -> None:
     python_release_acquirer.to_csv(output_root_path)
 
     # PEP Headerの取得
-    pep_header_acquirer = PepHeaderAcquirer(raw_data_out_dir_path='raw',
+    raw_root_path = os.path.join(output_root_path, 'raw')
+    pep_header_acquirer = PepHeaderAcquirer(raw_data_out_dir_path=raw_root_path,
                                             should_save_raw_data=True)
     pep_header_acquirer.acquire()
     pep_header_df = pep_header_acquirer.to_dataframe()
@@ -73,9 +74,8 @@ def main(output_root_path: str=None) -> None:
     # 各PEPのリンク先PEPの取得
     # ローカルファイルから取得する
     # TODO: PepHeaderAcquirerの中身を意識しなくても取得できるようにする
-    raw_data_root_path = pep_header_acquirer._raw_data_out_dir_path  # TODO: プロパティ経由で取得する
     raw_data_dir_name = pep_header_acquirer.fetch_start_datetime_str
-    raw_data_dir_path = os.path.join(raw_data_root_path, raw_data_dir_name)
+    raw_data_dir_path = os.path.join(raw_root_path, raw_data_dir_name)
 
     pep_link_acquirer = PepLinkDestinationAcquirer()
     pep_link_acquirer.acquire(pep_ids=acquired_pep_ids,
