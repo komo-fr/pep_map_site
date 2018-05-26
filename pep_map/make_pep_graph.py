@@ -90,10 +90,9 @@ def main(output_root_path: str=None) -> None:
                                pep_link_acquirer.fetch_start_datetime)
 
     # Save
-    dir_name = pep_graph.graph['fetch_start_datetime'].strftime('%Y%m%d')
     fetch_datetime = pep_graph.graph['fetch_start_datetime'].strftime('%Y%m%d-%H%M%S')
     file_name = 'pep_graph_{fetch_datetime}.gpickle'.format(fetch_time=fetch_datetime)
-    file_path = os.path.join(dir_name, file_name)
+    file_path = os.path.join(output_root_path, file_name)
 
     nx.write_gpickle(pep_graph, file_path)
 
