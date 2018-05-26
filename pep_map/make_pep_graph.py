@@ -85,9 +85,9 @@ def main(output_root_path: str=None) -> None:
     pep_link_acquirer.to_csv(output_root_path)
 
     # make pep graph
-    link_df = pep_link_df.copy()
-    header_df = pep_header_df.copy()
-    pep_graph = make_pep_graph(link_df, header_df, pep_link_acquirer.fetch_start_datetime)
+    pep_graph = make_pep_graph(pep_link_df,
+                               pep_header_df,
+                               pep_link_acquirer.fetch_start_datetime)
 
     # Save
     dir_name = pep_graph.graph['fetch_start_datetime'].strftime('%Y%m%d')
