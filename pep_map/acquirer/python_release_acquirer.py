@@ -9,9 +9,13 @@ from .acquirer import Acquirer
 
 
 class PythonReleaseAcquirer(Acquirer):
-    def __init__(self, should_save_raw_data: bool = False,
-                 raw_data_out_dir_path: str = 'html') -> None:
-        super().__init__(should_save_raw_data, raw_data_out_dir_path)
+    def __init__(self,
+                 should_save_raw_data: bool = False,
+                 raw_data_out_root_path: str = 'html',
+                 make_fetch_datetime_dir: bool = True) -> None:
+        super().__init__(should_save_raw_data,
+                         raw_data_out_root_path,
+                         make_fetch_datetime_dir)
         self._sorted_csv_column_names = ['release_number', 'release_date',
                                          'major', 'minor', 'micro',
                                          'release_download_url',
@@ -21,10 +25,8 @@ class PythonReleaseAcquirer(Acquirer):
 
     def _save_raw_data(self, html,
                        out_dir_path: str) -> None:  # TODO: これをもっと抽象化できないか？
-        fetch_datetime_str = self.fetch_start_datetime.strftime(
-            self._DATETIME_FORMAT)
         file_name = '{}.html'.format(self._raw_out_file_name_base)
-        path = Path(out_dir_path) / fetch_datetime_str / file_name
+        path = Path(out_dir_path) / file_name
         self._save_html(html, path)
 
     def _to_dataframe(self, source_dict: dict) -> pd.DataFrame:
@@ -49,6 +51,7 @@ class PythonReleaseAcquirer(Acquirer):
 
         if self._should_save_raw_data:
             self._save_raw_data(html, self._raw_data_out_dir_path)
+
         return html
 
     def _scrape(self, html) -> dict:

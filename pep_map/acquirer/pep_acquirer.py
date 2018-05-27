@@ -6,20 +6,23 @@ import re
 
 from bs4 import BeautifulSoup
 import pandas as pd
+import numpy as np
 
 from .acquirer import Acquirer
 
 
 class PepAcquirer(Acquirer):
-    def __init__(self, should_save_raw_data: bool= False,
-                 raw_data_out_dir_path: str = 'html') -> None:
-        super().__init__(should_save_raw_data, raw_data_out_dir_path)
+    def __init__(self,
+                 should_save_raw_data: bool= False,
+                 raw_data_out_root_path: str = 'html',
+                 make_fetch_datetime_dir: bool = True) -> None:
+        super().__init__(should_save_raw_data,
+                         raw_data_out_root_path,
+                         make_fetch_datetime_dir)
 
     def _save_raw_data(self, html, pep_id: str, out_dir_path: str) -> None:
-        fetch_datetime_str = self.fetch_start_datetime.strftime(
-            self._DATETIME_FORMAT)
         file_name = 'pep-{}.html'.format(pep_id)
-        path = Path(out_dir_path) / fetch_datetime_str / file_name
+        path = Path(out_dir_path) / file_name
         self._save_html(html, path)
 
     def _extract_pep_id(self, url: str) -> str:
@@ -92,6 +95,13 @@ class PepAcquirer(Acquirer):
         else:
             self._fetch_start_datetime = datetime.now()
 
+        if self._make_fetch_datetime_dir:
+            dir_name = self.fetch_start_datetime_str
+            self._raw_data_out_dir_path = os.path.join(self._raw_data_out_root_path,
+                                                       dir_name)
+        else:
+            self._raw_data_out_dir_path = self._raw_data_out_root_path
+
         data = self._acquire(input_local_dir_path=input_local_dir_path,
                              pep_ids=pep_ids)
         self._data = data
@@ -107,11 +117,11 @@ class PepAcquirer(Acquirer):
 
         peps_dict = {}
 
-        for pep_id in pep_ids:
+        for i, pep_id in enumerate(pep_ids):
             pep_dict = self._acquire_one_record(pep_id=pep_id,
                                                 input_local_dir_path=input_local_dir_path)
             peps_dict[pep_id] = pep_dict
-            print('Completed to acquire: {}'.format(pep_id))  # TODO: logging
+            print('[{}/{}] Completed to acquire: {}'.format(i+1, len(pep_ids), pep_id))  # TODO: logging
 
         return peps_dict
 
@@ -133,7 +143,8 @@ class PepAcquirer(Acquirer):
         """
 
         if (source_str != source_str) or not source_str:  # nullチェック
-            return source_str
+            # return source_str
+            return pd.NaT
 
         converted = ''
         # 想定する日付書式のリスト
@@ -160,9 +171,13 @@ class PepAcquirer(Acquirer):
 
 
 class PepHeaderAcquirer(PepAcquirer):
-    def __init__(self, should_save_raw_data: bool = False,
-                 raw_data_out_dir_path: str = 'html') -> None:
-        super().__init__(should_save_raw_data, raw_data_out_dir_path)
+    def __init__(self,
+                 should_save_raw_data: bool = False,
+                 raw_data_out_root_path: str = 'html',
+                 make_fetch_datetime_dir: bool = True) -> None:
+        super().__init__(should_save_raw_data,
+                         raw_data_out_root_path,
+                         make_fetch_datetime_dir)
         self._csv_out_file_name_base = 'pep_header'
 
     def _to_dataframe(self, source_dict: dict) -> pd.DataFrame:
@@ -198,9 +213,13 @@ class PepHeaderAcquirer(PepAcquirer):
 
 
 class PepLinkDestinationAcquirer(PepAcquirer):
-    def __init__(self, should_save_raw_data: bool = False,
-                 raw_data_out_dir_path: str = 'html') -> None:
-        super().__init__(should_save_raw_data, raw_data_out_dir_path)
+    def __init__(self,
+                 should_save_raw_data: bool = False,
+                 raw_data_out_root_path: str = 'html',
+                 make_fetch_datetime_dir: bool = True) -> None:
+        super().__init__(should_save_raw_data,
+                         raw_data_out_root_path,
+                         make_fetch_datetime_dir)
         self._csv_out_file_name_base = 'pep_link_destination'
 
     def _to_dataframe(self, source_dict: dict) -> pd.DataFrame:
