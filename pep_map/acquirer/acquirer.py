@@ -12,7 +12,10 @@ import pandas as pd
 
 class Acquirer:
 
-    def __init__(self, should_save_raw_data: bool = False, raw_data_out_dir_path: str='html') -> None:
+    def __init__(self,
+                 should_save_raw_data: bool = False,
+                 raw_data_out_root_path: str='html',
+                 make_fetch_datetime_dir: bool=True) -> None:
         self._fetch_start_datetime = None
         self._data = None
         self._csv_out_file_name_base = ''
@@ -20,11 +23,21 @@ class Acquirer:
         self._DATETIME_FORMAT = '%Y%m%d-%H%M%S'
 
         self._should_save_raw_data = should_save_raw_data
-        self._raw_data_out_dir_path = raw_data_out_dir_path
+        self._raw_data_out_root_path = raw_data_out_root_path
+        self._raw_data_out_dir_path = None
+        self._make_fetch_datetime_dir = make_fetch_datetime_dir
 
     @property
     def fetch_start_datetime(self):
         return self._fetch_start_datetime
+
+    @property
+    def raw_data_out_root_path(self):
+        return self._raw_data_out_root_path
+
+    @property
+    def raw_data_out_dir_path(self):
+        return self._raw_data_out_dir_path
 
     @property
     def data(self):
@@ -42,6 +55,13 @@ class Acquirer:
                 input_local_root_path)
         else:
             self._fetch_start_datetime = datetime.now()
+
+        if self._make_fetch_datetime_dir:
+            dir_name = self.fetch_start_datetime_str
+            self._raw_data_out_dir_path = os.path.join(self._raw_data_out_root_path,
+                                                       dir_name)
+        else:
+            self._raw_data_out_dir_path = self._raw_data_out_root_path
 
         data = self._acquire(input_local_root_path=input_local_root_path)
         self._data = data
@@ -61,7 +81,7 @@ class Acquirer:
         response = urllib.request.urlopen(req)
         html = response.read()
 
-        print('Compeleted to fetch.: {}'.format(url))
+        print('Compeleted to fetch.: {}'.format(url))  # TODO: loggigに置き換える
 
         return html
 

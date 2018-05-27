@@ -61,7 +61,7 @@ def main(output_root_path: str=None) -> None:
 
     # PEP Headerの取得
     raw_root_path = os.path.join(output_root_path, 'raw')
-    pep_header_acquirer = PepHeaderAcquirer(raw_data_out_dir_path=raw_root_path,
+    pep_header_acquirer = PepHeaderAcquirer(raw_data_out_root_path=raw_root_path,
                                             should_save_raw_data=True)
     pep_header_acquirer.acquire()
     pep_header_df = pep_header_acquirer.to_dataframe()
@@ -73,9 +73,7 @@ def main(output_root_path: str=None) -> None:
 
     # 各PEPのリンク先PEPの取得
     # ローカルファイルから取得する
-    # TODO: PepHeaderAcquirerの中身を意識しなくても取得できるようにする
-    raw_data_dir_name = pep_header_acquirer.fetch_start_datetime_str
-    raw_data_dir_path = os.path.join(raw_root_path, raw_data_dir_name)
+    raw_data_dir_path = pep_header_acquirer.raw_data_out_dir_path
 
     pep_link_acquirer = PepLinkDestinationAcquirer()
     pep_link_acquirer.acquire(pep_ids=acquired_pep_ids,
@@ -91,7 +89,7 @@ def main(output_root_path: str=None) -> None:
 
     # Save
     fetch_datetime = pep_graph.graph['fetch_start_datetime'].strftime('%Y%m%d-%H%M%S')
-    file_name = 'pep_graph_{fetch_datetime}.gpickle'.format(fetch_time=fetch_datetime)
+    file_name = 'pep_graph_{fetch_datetime}.gpickle'.format(fetch_datetime=fetch_datetime)
     file_path = os.path.join(output_root_path, file_name)
 
     nx.write_gpickle(pep_graph, file_path)
