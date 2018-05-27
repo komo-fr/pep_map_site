@@ -21,6 +21,10 @@ def to_adjacency_matrix(source_df: pd.DataFrame) -> pd.DataFrame:
     for line in missing_lines:
         df.loc[line] = 0
 
+    # 列と行の並び順を揃える
+    df = df[sorted(df.columns)]
+    df = df.sort_index()
+
     # PEP 0 は目次なので除外する
     df = df.loc[df.index != '0000', df.columns != '0000']
 
