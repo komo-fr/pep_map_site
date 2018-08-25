@@ -1,5 +1,6 @@
 import argparse
 import datetime
+from pathlib import Path
 
 import pandas as pd
 from bokeh.io import show, output_file
@@ -15,12 +16,12 @@ import component.timeline_component as tl_compo
 from component.style_setting import BASE_FONT_COLOR, PYTHON_YELLOW_COLOR_CODE, PYTHON_BLUE_COLOR_CODE
 
 
-def make_timeline_html(input_path: str, output_path: str) -> None:
+def make_timeline_html(input_dir_path: str, output_path: str) -> None:
     # Load Data
-    pep_graph = nx.read_gpickle(input_path)
+    path = Path(input_dir_path) / 'pep_graph.gpickle'
+    pep_graph = nx.read_gpickle(path)
 
-    # debug++ ここから
-    path = 'data/python_release_info.csv'  # TODO inputで入力する
+    path = Path(input_dir_path) / 'python_release_info.csv'
     release_df = pd.read_csv(path,
                              encoding='utf-8',
                              parse_dates=['release_date'])
@@ -49,8 +50,6 @@ def make_timeline_html(input_path: str, output_path: str) -> None:
                            'py2_release_line_source': py2_release_line_data_source,
                            'py3_release_line_source': py3_release_line_data_source
                            }
-
-    # debug++ ここまで
 
     all_pep_data_source = compo.generate_node_data_source(pep_graph)
 
@@ -355,16 +354,16 @@ def make_timeline_html(input_path: str, output_path: str) -> None:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='PEPの参照関係を年表形式で可視化するHTMLファイルを生成します。')
+    parser = argparse.ArgumentParser(description='Generate an HTML file that visualizes the reference relation of PEPs in timeline format.')
     parser.add_argument('-s',
                         '--source',
                         type=str,
-                        help='入力となるPEPの参照関係を表現したグラフ構造のファイルパス(gpickle形式)')
+                        help='input directory path')
     parser.add_argument('-d',
                         '--destination',
                         type=str,
-                        help='出力となるHTMLのファイルパス')
+                        help='output .html path')
     args = parser.parse_args()
     # TODO: パスのチェック
     # TODO: ログ出力
-    make_timeline_html(input_path=args.source, output_path=args.destination)
+    make_timeline_html(input_dir_path=args.source, output_path=args.destination)
