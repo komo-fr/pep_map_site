@@ -1,21 +1,56 @@
 import argparse
 import datetime
 
+import pandas as pd
 from bokeh.io import show, output_file
 from bokeh.models import Div
 from bokeh.models.callbacks import CustomJS
-from bokeh.models.widgets import TextInput
+from bokeh.models.widgets import TextInput, CheckboxGroup
 from bokeh.layouts import column, row
 import networkx as nx
 
 import component.component as compo
 import component.table_component as table_compo
 import component.timeline_component as tl_compo
+from component.style_setting import BASE_FONT_COLOR, PYTHON_YELLOW_COLOR_CODE, PYTHON_BLUE_COLOR_CODE
 
 
 def make_timeline_html(input_path: str, output_path: str) -> None:
-    BASE_FONT_COLOR = '#545454'
+    # Load Data
     pep_graph = nx.read_gpickle(input_path)
+
+    # debug++ ここから
+    path = 'data/python_release_info.csv'  # TODO inputで入力する
+    release_df = pd.read_csv(path,
+                             encoding='utf-8',
+                             parse_dates=['release_date'])
+
+    release_df = release_df[release_df.micro == 0]
+    release_df['color'] = release_df.major.apply(lambda x: PYTHON_YELLOW_COLOR_CODE if x == 2 else PYTHON_BLUE_COLOR_CODE)  # 2, 3以外が出てきたら再考すること
+
+    node_dict = dict(pep_graph.nodes(data=True))
+    date_list = [value['Created_dt'] for key, value in node_dict.items()]
+
+    min_date = datetime.datetime(min(date_list).year, 1, 1)
+    py2_release_label_data_source = tl_compo.generate_release_label_source(release_df,
+                                                                           major_version=2,
+                                                                           pos_x=min_date)
+    py3_release_label_data_source = tl_compo.generate_release_label_source(release_df,
+                                                                           major_version=3,
+                                                                           pos_x=min_date)
+
+    py2_release_line_data_source = tl_compo.generate_release_line_data_source(release_df,
+                                                                              major_version=2)
+    py3_release_line_data_source = tl_compo.generate_release_line_data_source(release_df,
+                                                                              major_version=3)
+
+    release_source_dict = {'py2_release_label_source': py2_release_label_data_source,
+                           'py3_release_label_source': py3_release_label_data_source,
+                           'py2_release_line_source': py2_release_line_data_source,
+                           'py3_release_line_source': py3_release_line_data_source
+                           }
+
+    # debug++ ここまで
 
     all_pep_data_source = compo.generate_node_data_source(pep_graph)
 
@@ -53,6 +88,10 @@ def make_timeline_html(input_path: str, output_path: str) -> None:
     <li>Which PEPs do link that PEP?</li>
     <li>Which PEPs are linked from that PEP?</li>
     """
+
+    checkbox_group = CheckboxGroup(labels=["Show Python 2 release dates",
+                                           "Show Python 3 release dates"],
+                                   active=[0, 1])
 
     def callback_input_pep_number(all_pep_data_source=all_pep_data_source,
                                   link_to_table_source=link_to_table_source,
@@ -242,17 +281,45 @@ def make_timeline_html(input_path: str, output_path: str) -> None:
         else:
             error_message_div.text = "Not Found: PEP " + inputed_text
 
+    def callback_change_checkbox(py2_label_source=py2_release_label_data_source,
+                                 py2_line_source=py2_release_line_data_source,
+                                 py3_label_source=py3_release_label_data_source,
+                                 py3_line_source=py3_release_line_data_source):
+
+        def switch_show_or_hide(label_source, line_source, major_version):
+
+            label_data = label_source.data
+            line_data = line_source.data
+
+            check_box_index_map = {2: 0, 3: 1}
+
+            if check_box_index_map[major_version] in cb_obj.active:
+                label_data['alpha'] = [1] * len(label_data['alpha'])
+                line_data['alpha'] = [1] * len(line_data['alpha'])
+            else:
+                label_data['alpha'] = [0] * len(label_data['alpha'])
+                line_data['alpha'] = [0] * len(line_data['alpha'])
+
+            label_source.data = label_data
+            label_source.change.emit()
+
+            line_source.data = line_data
+            line_source.change.emit()
+
+        switch_show_or_hide(py2_label_source, py2_line_source, 2)
+        switch_show_or_hide(py3_label_source, py3_line_source, 3)
+
     # Header Component
     pep_textinput = TextInput(title='PEP:',
                               placeholder='Please enter the PEP number.',
                               callback=CustomJS.from_py_func(callback_input_pep_number),
                               width=190)
     info_div = Div(width=200, height=20,
-                   style={'background-color': '#F5F5F5',
+                   style={'background-color': '#175A89',
                           'padding': '5px',
-                          'color': BASE_FONT_COLOR})
+                          'color': '#FFFFFF'})
     info_div.text = "<li>" \
-                    "<a href='https://github.com/komo-fr/pep_map_site'>repository</a>" \
+                    "<a href='https://github.com/komo-fr/pep_map_site'><font color='#FFFFFF'>repository</font></a>" \
                     "</li>"
     inputbox_component = column(pep_textinput, error_message_div)
     color_desc_component = compo.generate_color_description_component()
@@ -261,13 +328,18 @@ def make_timeline_html(input_path: str, output_path: str) -> None:
                            info_div)
 
     # Timeline Component
+    checkbox_group.callback = CustomJS.from_py_func(callback_change_checkbox)
     timeline_plot = tl_compo.generate_timeline_plot(pep_graph,
                                                     timeline_display_circle_source,
                                                     timeline_label_source,
-                                                    timeline_desc_label_source)
+                                                    timeline_desc_label_source,
+                                                    release_source_dict)
     as_of_date_div = Div(width=200, height=8, style={'color': 'red'})
-    # TODO: ベタ書きではなくデータから取れるようにする
-    as_of_date_div.text = '* Data as of 2018/1/20'  # データ取得日
+    # TODO: fetch_start_datetimeを持っていないときの対応について決める
+    fetch_datetime = pep_graph.graph['fetch_start_datetime'].strftime('%Y/%m/%d') \
+        if 'fetch_start_datetime' in pep_graph.graph else 'Unknown'
+
+    as_of_date_div.text = '* Data as of {}'.format(fetch_datetime)  # データ取得日
     timeline_component = column(timeline_plot, as_of_date_div)
 
     # Table Component
@@ -279,7 +351,7 @@ def make_timeline_html(input_path: str, output_path: str) -> None:
     # TODO: ここでshowしなくても出力できる方法はないか？
     output_file(output_path, 'PEP Map | Timeline')
 
-    show(column(header_component, timeline_component, table_component))
+    show(column(header_component, checkbox_group, timeline_component, table_component))
 
 
 if __name__ == '__main__':
