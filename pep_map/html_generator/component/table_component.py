@@ -4,6 +4,7 @@ from bokeh.models.widgets.tables import HTMLTemplateFormatter
 from networkx.classes.graph import Graph
 
 from .util import convert_node_attribute2df
+from .style_setting import STATUS_COLOR_MAP_DICT, STATUS_FONT_COLOR_MAP_DICT
 
 
 def generate_data_table_data_source(source_graph: Graph) -> ColumnDataSource:
@@ -15,7 +16,12 @@ def generate_data_table_data_source(source_graph: Graph) -> ColumnDataSource:
     df = convert_node_attribute2df(source_graph)
     df['Created_str'] = df.Created_dt.apply(lambda x: x.strftime('%Y-%m-%d')
                                             if x == x else 'No Data')
-    df = df[['PEP', 'Title', 'Status', 'Created_str', 'status_node_color']]
+
+    df['status_node_color'] = df['Status'].apply(lambda x: STATUS_COLOR_MAP_DICT[x])
+    df['status_font_color'] = df['Status'].apply(lambda x: STATUS_FONT_COLOR_MAP_DICT[x])
+
+    df = df[['PEP', 'Title', 'Status', 'Created_str', 'status_node_color', 'status_font_color']]
+
     return ColumnDataSource(df)
 
 
@@ -28,7 +34,7 @@ def generate_data_table(data_source: ColumnDataSource) -> DataTable:
     index_template = "<a href='https://www.python.org/dev/peps/pep-<%= index %>' target='_blank'>" \
                      "PEP <%= PEP %>" \
                      "</a>"
-    status_template = "<div style='background:<%= status_node_color %>; color:#FAFAFA; text-align:center'>" \
+    status_template = "<div style='background:<%= status_node_color %>; color:<%= status_font_color %>; text-align:center'>" \
                       "<%= Status %>" \
                       "</div>"
 
@@ -41,8 +47,9 @@ def generate_data_table(data_source: ColumnDataSource) -> DataTable:
         TableColumn(field='Created_str', title='Created', width=100),
     ]
 
+    # TODO: row_headers is deprecated. 
+    # change code when bokeh 1.0 is released
     data_table = DataTable(source=data_source, columns=columns,
-                           width=540, height=400,
-                           row_headers=False)
+                           width=540, height=420, index_width=None)
 
     return data_table

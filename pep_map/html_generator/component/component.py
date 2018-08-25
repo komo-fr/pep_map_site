@@ -4,6 +4,7 @@ from bokeh.layouts import column, row
 from networkx import DiGraph
 
 from .util import convert_node_attribute2df
+from .style_setting import STATUS_COLOR_MAP_DICT, STATUS_FONT_COLOR_MAP_DICT
 
 
 def generate_node_data_source(source_graph: DiGraph) -> ColumnDataSource:
@@ -25,12 +26,9 @@ def generate_node_data_source(source_graph: DiGraph) -> ColumnDataSource:
 
     df['Created_str'] = df.Created_dt.apply(lambda x: x.strftime('%Y-%m-%d')
                                             if x == x else 'No Data')
-
-    # TODO: ステータスの色を設定する場所を統一する
-    df.loc[df['Status'] == 'Rejected', ['status_node_color']] = '#8A0808'
-    df.loc[df['Status'] == 'Superseded', ['status_node_color']] = '#000000'
-    df.loc[df['Status'] == 'Withdrawn', ['status_node_color']] = '#737373'
-    df.loc[df['Status'] == 'Deferred', ['status_node_color']] = '#5F4C0B'
+    df['PythonVersion'] = df['Python-Version'].apply(lambda x: x if x == x else 'No Data')
+    df['status_node_color'] = df['Status'].apply(lambda x: STATUS_COLOR_MAP_DICT[x])
+    df['status_font_color'] = df['Status'].apply(lambda x: STATUS_FONT_COLOR_MAP_DICT[x])
 
     return ColumnDataSource(df)
 
@@ -46,6 +44,7 @@ def generate_color_description_component() -> column:
 
     div.text = 'Color means the status of PEPs.'
     left_div.text = """<img src="image/draft_icon.png"> Draft<br>
+<img src="image/provisional_icon.png"> Provisional<br>
 <img src="image/accepted_icon.png"> Accepted<br>
 <img src="image/final_icon.png"> Final<br>
 <img src="image/active_icon.png"> Active<br><br>
