@@ -17,10 +17,13 @@ def generate_data_table_data_source(source_graph: Graph) -> ColumnDataSource:
     df['Created_str'] = df.Created_dt.apply(lambda x: x.strftime('%Y-%m-%d')
                                             if x == x else 'No Data')
 
-    df['status_node_color'] = df['Status'].apply(lambda x: STATUS_COLOR_MAP_DICT[x])
-    df['status_font_color'] = df['Status'].apply(lambda x: STATUS_FONT_COLOR_MAP_DICT[x])
+    df['status_node_color'] = df['Status'].apply(lambda x:
+                                                 STATUS_COLOR_MAP_DICT[x])
+    df['status_font_color'] = df['Status'].apply(lambda x:
+                                                 STATUS_FONT_COLOR_MAP_DICT[x])
 
-    df = df[['PEP', 'Title', 'Status', 'Created_str', 'status_node_color', 'status_font_color']]
+    df = df[['PEP', 'Title', 'Status', 'Created_str',
+             'status_node_color', 'status_font_color']]
 
     return ColumnDataSource(df)
 
@@ -31,10 +34,12 @@ def generate_data_table(data_source: ColumnDataSource) -> DataTable:
     :param data_source:
     :return:
     """
-    index_template = "<a href='https://www.python.org/dev/peps/pep-<%= index %>' target='_blank'>" \
+    index_template = "<a href='https://www.python.org/dev/peps/pep-<%= index %>' " \
+                     "target='_blank'>" \
                      "PEP <%= PEP %>" \
                      "</a>"
-    status_template = "<div style='background:<%= status_node_color %>; color:<%= status_font_color %>; text-align:center'>" \
+    status_template = "<div style='background:<%= status_node_color %>;" \
+                      " color:<%= status_font_color %>; text-align:center'>" \
                       "<%= Status %>" \
                       "</div>"
 
@@ -47,7 +52,7 @@ def generate_data_table(data_source: ColumnDataSource) -> DataTable:
         TableColumn(field='Created_str', title='Created', width=100),
     ]
 
-    # TODO: row_headers is deprecated. 
+    # TODO: row_headers is deprecated.
     # change code when bokeh 1.0 is released
     data_table = DataTable(source=data_source, columns=columns,
                            width=540, height=420, index_width=None)

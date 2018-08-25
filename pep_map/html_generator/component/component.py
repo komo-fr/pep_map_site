@@ -18,17 +18,25 @@ def generate_node_data_source(source_graph: DiGraph) -> ColumnDataSource:
     df = df.reset_index()
     df['pep_id'] = df['index']
     df = df.set_index('index')
-    df['in_edge_nodes'] = df.pep_id.apply(lambda x: [edge[0] for edge in source_graph.in_edges(x)])
-    df['out_edge_nodes'] = df.pep_id.apply(lambda x: [edge[1] for edge in source_graph.out_edges(x)])
+    df['in_edge_nodes'] = df.pep_id.apply(lambda x:
+                                          [edge[0] for edge
+                                          in source_graph.in_edges(x)])
+    df['out_edge_nodes'] = df.pep_id.apply(lambda x:
+                                           [edge[1]
+                                           for edge in source_graph.out_edges(x)])
     df['in_degree'] = df.pep_id.apply(lambda x: source_graph.in_degree()[x])
     df['out_degree'] = df.pep_id.apply(lambda x: source_graph.out_degree()[x])
     del df['pep_id']
 
     df['Created_str'] = df.Created_dt.apply(lambda x: x.strftime('%Y-%m-%d')
                                             if x == x else 'No Data')
-    df['PythonVersion'] = df['Python-Version'].apply(lambda x: x if x == x else 'No Data')
-    df['status_node_color'] = df['Status'].apply(lambda x: STATUS_COLOR_MAP_DICT[x])
-    df['status_font_color'] = df['Status'].apply(lambda x: STATUS_FONT_COLOR_MAP_DICT[x])
+    df['PythonVersion'] = df['Python-Version'].apply(lambda x:
+                                                     x if x == x
+                                                     else 'No Data')
+    df['status_node_color'] = df['Status'].apply(lambda x:
+                                                 STATUS_COLOR_MAP_DICT[x])
+    df['status_font_color'] = df['Status'].apply(lambda x:
+                                                 STATUS_FONT_COLOR_MAP_DICT[x])
 
     return ColumnDataSource(df)
 

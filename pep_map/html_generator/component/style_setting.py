@@ -8,7 +8,7 @@ STATUS_COLOR_MAP_DICT = {
     'April Fool!': '#FFF200',  # blight yellow
     'Draft': '#FBA848',  # orange
     'Final': '#58BE89',  # green
-    'Provisional': '#EDE496', # yellow
+    'Provisional': '#EDE496',  # yellow
     'Rejected': '#8A0808',
     'Superseded': '#000000',
     'Withdrawn': '#737373',
