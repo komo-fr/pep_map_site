@@ -20,5 +20,5 @@ Then you can see the following information.
 		* According to PEP 1, the "Created" field seems to be a required item. However, in fact there are PEPs that "Created" field is empty. If "Created" is empty, it isn't displayed on the time series plot.
 
 
-If you find funny English, I'd be happy to tell me in issue 😆
+If you find funny English, I'd be happy to tell me in issue 😆   
 (へんな英語見つけたらIssueで教えてね)
