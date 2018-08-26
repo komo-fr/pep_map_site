@@ -2,21 +2,19 @@
 https://komo-fr.github.io/pep_map_site/
 
 ## What is this?
-PEP (Python Enhancement Proposals) 同士の参照関係を可視化するページです。
-左上のテキストボックスにPEPの番号を入力すると、以下の情報を年表形式・表形式で表示します。
-1. その PEPが、他のどのPEPから参照されているか（リンク元）
-2. そのPEPが、他のどのPEPを参照しているか（リンク先）
+"PEP Map Site" is web pages that visualizes the reference relation between PEPs (Python Enhancement Proposals). 
+Let's enter the PEP number in the left text box.
+Then you can see the following information.
+1. Which PEPs do link that PEP?
+2. Which PEPs are linked from that PEP?
 
+<img src="https://komo-fr.github.io/pep_map_site/image/pep_map_timeline_capture.png" alt="PEP Map| Timeline " title="PEP Map | Timeline">
 
-ゆるく作っていますが、不具合や気づいた点などあれば、[issue](https://github.com/komo-fr/pep_map_site/issues)やtwitterの[@komo_fr](https://twitter.com/komo_fr)宛に教えて頂けると助かります。   
-※ 元々自分用に作ったものなので、対応できるかどうかは気力次第です。
-
-## Detail
-- PEP同士の参照関係について：
-	+ 参照関係の有無は`<a>`タグを元に判断しています。そのため、実際には他のPEPに言及していてもリンクが貼られていないケースには対応できていません。
-	+ 現在手動でスクレイピングしているので、可視化されているのは最新のデータではありません。データ取得日は画面中央の赤字の「Data as of  …」で確認してください。
-- 時系列プロットについて：
-	+  色: PEPのStatus別。([PEP 1](https://www.python.org/dev/peps/pep-0001/ "PEP 1")参照)
-	+ 日付(x軸): 各PEPのCreatedフィールドの値。
-		* PEP 1のPEP Header Preamble
-によるとCreatedフィールドは必須項目のようですが、実際にはCreatedが空のPEPが存在します。Createdが空の場合は、時系列上には表示していません。
+## Note
+- How to get the reference relation between PEPs:
+	+ Whether reference relation exists or not is judged based on `<a>` tag. Therefore, it is not possible to deal with the cases which are not linked even if mentioning other PEP.
+	+ The visualized data isn't the latest version since scraping process isn't performed periodically(This will be resolved in the near future). Please check the data acquisition date with "Data as of ..." in the red in the center of the screen.
+- How to look at the time series plot:
+	+ color: The color of the node means PEP's Status. For PEP status, refer to [PEP 1](https://www.python.org/dev/peps/pep-0001/).
+	+ date (x axis): The value of the "Created" field for each PEP.
+		* According to PEP 1, the "Created" field seems to be a required item. However, in fact there are PEPs that "Created" field is empty. If "Created" is empty, it is not displayed on the time series plot.
