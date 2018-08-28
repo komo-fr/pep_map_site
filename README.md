@@ -1,11 +1,11 @@
 # PEP Map Site
 ## What is this?
-"PEP Map Site" is web pages that **visualizes the reference relation between PEPs** (Python Enhancement Proposals).   
-**Timeline:** https://komo-fr.github.io/pep_map_site/   
+<a href="https://komo-fr.github.io/pep_map_site/" target="_blank">PEP Map Site</a> is web pages that **visualizes the reference relation between PEPs** (Python Enhancement Proposals).   
+**Timeline:** https://komo-fr.github.io/pep_map_site/timline.html   
 **Network:** https://komo-fr.github.io/pep_map_site/network.html   
  
 ## Timeline
-https://komo-fr.github.io/pep_map_site/   
+https://komo-fr.github.io/pep_map_site/timeline.html   
 Let's enter the PEP number in the left text box.   
 Then you can see the following information.   
 1. Which PEPs do link that PEP?
