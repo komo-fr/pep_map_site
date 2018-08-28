@@ -1,11 +1,10 @@
 # PEP Map Site
-Timeline: https://komo-fr.github.io/pep_map_site/   
-Network: https://komo-fr.github.io/pep_map_site/network.html   
-
 ## What is this?
-"PEP Map Site" is web pages that **visualizes the reference relation between PEPs** (Python Enhancement Proposals).    
-
-### Timeline
+"PEP Map Site" is web pages that **visualizes the reference relation between PEPs** (Python Enhancement Proposals).   
+**Timeline:** https://komo-fr.github.io/pep_map_site/   
+**Network:** https://komo-fr.github.io/pep_map_site/network.html   
+ 
+## Timeline
 https://komo-fr.github.io/pep_map_site/   
 Let's enter the PEP number in the left text box.   
 Then you can see the following information.   
@@ -20,7 +19,7 @@ Then you can see the following information.
 	+ date (x axis): The value of the "Created" field for each PEP.
 		* According to PEP 1, the "Created" field seems to be a required item. However, in fact there are PEPs that "Created" field is empty. If "Created" is empty, it isn't displayed on the time series plot.
 		
-### Network
+## Network
 https://komo-fr.github.io/pep_map_site/network.html   
 
 Let's enter the PEP number in the left text box or tap node.   
