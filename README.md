@@ -42,6 +42,5 @@ Then you can see the following information.
 	+ Whether reference relation exists or not is judged based on `<a>` tag. Therefore, it is **NOT** possible to deal with the cases which aren't linked even if mentioning other PEP.
 	+ The visualized data is **NOT** the latest version since scraping process isn't performed periodically (This will be resolved in the near future). Please check the data acquisition date with *"Data as of ..."* in the red in the center of the screen.
 
-
-If you find funny English, I'd be happy to tell me in issue 😆   
+If you find mistakes in my English, I'd be happy to tell me in issue 😆   
 (へんな英語見つけたらIssueで教えてね)
