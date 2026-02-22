@@ -1,4 +1,8 @@
 # PEP Map (α ver)
+# ⚠️ Note
+This project has moved to a new repository!    
+**👉 Please see the updated version here:** https://github.com/komo-fr/pep-map
+
 ## What is this?
 <a href="https://komo-fr.github.io/pep_map_site/" target="_blank">PEP Map</a> is web pages that **visualizes the reference relation between PEPs** (Python Enhancement Proposals).   
 - **Timeline:** https://komo-fr.github.io/pep_map_site/timeline.html   
